@@ -1,0 +1,70 @@
+# Per-agent LLM routing and behavior configuration.
+# Models map to claude-* IDs at src/newsalpha/llm/routing.py
+
+agents:
+  news_collector:
+    model: haiku                 # high-volume, low-complexity
+    temperature: 0.0
+    max_tokens: 1024
+    cache_system_prompt: true
+
+  sentiment_analyst:
+    model: sonnet
+    temperature: 0.2
+    max_tokens: 2048
+    cache_system_prompt: true
+
+  fundamental_analyst:
+    model: sonnet
+    temperature: 0.2
+    max_tokens: 2048
+    cache_system_prompt: true
+
+  technical_analyst:
+    model: sonnet
+    temperature: 0.2
+    max_tokens: 2048
+    cache_system_prompt: true
+
+  macro_analyst:                 # added in W5
+    model: sonnet
+    temperature: 0.2
+    max_tokens: 2048
+    cache_system_prompt: true
+
+  bull_researcher:
+    model: sonnet
+    temperature: 0.4
+    max_tokens: 3072
+    cache_system_prompt: true
+
+  bear_researcher:
+    model: sonnet
+    temperature: 0.4
+    max_tokens: 3072
+    cache_system_prompt: true
+
+  debate_judge:
+    model: sonnet
+    temperature: 0.1
+    max_tokens: 2048
+    cache_system_prompt: true
+
+  trader:
+    model: opus                  # final decision, large context
+    temperature: 0.1
+    max_tokens: 2048
+    cache_system_prompt: true
+
+  reflection:                    # added in W5, async
+    model: sonnet
+    temperature: 0.3
+    max_tokens: 2048
+    cache_system_prompt: true
+
+# A/B-able debate behavior. Switching mode does NOT change the graph topology,
+# only the prompts used by bull/bear/judge.
+debate:
+  mode: adversarial              # adversarial | panel | socratic
+  rounds: 2
+  min_conviction_to_trade: 0.6

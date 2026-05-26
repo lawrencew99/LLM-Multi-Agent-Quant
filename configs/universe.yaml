@@ -1,0 +1,31 @@
+# Default trading universe. MVP starts with high-coverage, liquid US large caps.
+# Edit freely; news connectors will only listen to symbols listed here.
+
+tickers:
+  # Tech mega caps
+  - AAPL
+  - MSFT
+  - GOOGL
+  - AMZN
+  - META
+  - NVDA
+  - TSLA
+  # Finance
+  - JPM
+  - BAC
+  - GS
+  # Healthcare
+  - UNH
+  - JNJ
+  - LLY
+  # Consumer
+  - WMT
+  - COST
+  - HD
+  # Energy / Industrials
+  - XOM
+  - CAT
+  # Benchmarks (used by backtest, not traded)
+  - SPY
+  - QQQ
+  - VIX

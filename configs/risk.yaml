@@ -1,0 +1,26 @@
+# Hard, deterministic risk rules. Enforced by Python in src/newsalpha/risk/rules.py
+# — never delegated to an LLM.
+
+position:
+  max_single_pct: 0.05           # 5% NAV per ticker
+  max_sector_pct: 0.25           # 25% NAV per GICS sector
+  max_leverage: 1.0              # MVP: no leverage
+
+drawdown:
+  circuit_breaker_pct: -0.10     # halt trading 24h on -10% from peak
+  cool_off_hours: 24
+
+stops:
+  atr_multiplier: 2.0            # initial stop = entry - 2*ATR(14)
+  trailing_atr_multiplier: 3.0   # trail at 3*ATR
+
+universe_filter:
+  min_avg_dollar_volume_usd: 10_000_000
+  exclude_otc: true
+  exclude_adr_small_cap: true
+  earnings_blackout_hours: 24    # no new entries 24h before earnings
+
+llm_safety:
+  on_json_parse_error: skip      # skip | retry | halt
+  on_timeout_seconds: 60
+  on_budget_exceeded: pause      # pause | halt
