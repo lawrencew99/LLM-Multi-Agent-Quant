@@ -67,7 +67,9 @@ class TradingState(TypedDict, total=False):
     # Decision
     trade_signal: dict[str, Any] | None
     risk_decision: dict[str, Any] | None
+    portfolio_decision: dict[str, Any] | None
     final_orders: list[dict[str, Any]]
+    execution_results: list[dict[str, Any]]
 
     # Telemetry
     cost_usd: Annotated[float, add]

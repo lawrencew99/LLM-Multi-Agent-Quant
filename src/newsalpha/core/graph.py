@@ -15,7 +15,9 @@ from newsalpha.agents.debate_orchestrator import (
     should_trade,
 )
 from newsalpha.agents.fundamental_analyst import fundamental_analyst
+from newsalpha.agents.macro_analyst import macro_analyst
 from newsalpha.agents.news_collector import news_collector
+from newsalpha.agents.portfolio_manager import portfolio_manager
 from newsalpha.agents.risk_manager import risk_manager
 from newsalpha.agents.sentiment_analyst import sentiment_analyst
 from newsalpha.agents.technical_analyst import technical_analyst
@@ -29,13 +31,14 @@ def _analysts_join(state: TradingState) -> dict[str, Any]:
 
 
 def build_graph() -> Any:
-    """W3 graph: news → 3 parallel analysts → debate (N rounds) → judge → trader → risk → END.
+    """W5 graph: news → 4 parallel analysts (incl. macro) → debate → judge
+                    → trader → risk → portfolio → END.
 
     Topology:
 
         START → news_collector
                 ↓ (fan-out)
-        sentiment / fundamental / technical
+        sentiment / fundamental / technical / macro
                 ↓ (fan-in)
         analysts_ready → debate_orchestrator → bull_researcher → bear_researcher
                                                                   ↓
@@ -44,7 +47,11 @@ def build_graph() -> Any:
                                                               debate_judge
                                                                   ↓
                                               conviction < 0.6 → log_only → END
-                                              conviction ≥ 0.6 → trader → risk_manager → END
+                                              conviction ≥ 0.6 → trader
+                                                                  ↓
+                                                              risk_manager
+                                                                  ↓
+                                                          portfolio_manager → END
 
     Bull and Bear are sequential within a round on purpose: in `adversarial`
     mode the bear must engage with the bull's just-stated claims. `panel` mode
@@ -56,6 +63,7 @@ def build_graph() -> Any:
     g.add_node("sentiment_analyst", sentiment_analyst)
     g.add_node("fundamental_analyst", fundamental_analyst)
     g.add_node("technical_analyst", technical_analyst)
+    g.add_node("macro_analyst", macro_analyst)
     g.add_node("analysts_ready", _analysts_join)
     g.add_node("debate_orchestrator", debate_orchestrator)
     g.add_node("bull_researcher", bull_researcher)
@@ -64,15 +72,18 @@ def build_graph() -> Any:
     g.add_node("debate_judge", debate_judge)
     g.add_node("trader", trader)
     g.add_node("risk_manager", risk_manager)
+    g.add_node("portfolio_manager", portfolio_manager)
     g.add_node("log_only", log_only)
 
     g.add_edge(START, "news_collector")
     g.add_edge("news_collector", "sentiment_analyst")
     g.add_edge("news_collector", "fundamental_analyst")
     g.add_edge("news_collector", "technical_analyst")
+    g.add_edge("news_collector", "macro_analyst")
     g.add_edge("sentiment_analyst", "analysts_ready")
     g.add_edge("fundamental_analyst", "analysts_ready")
     g.add_edge("technical_analyst", "analysts_ready")
+    g.add_edge("macro_analyst", "analysts_ready")
 
     g.add_edge("analysts_ready", "debate_orchestrator")
     g.add_edge("debate_orchestrator", "bull_researcher")
@@ -98,7 +109,8 @@ def build_graph() -> Any:
     )
 
     g.add_edge("trader", "risk_manager")
-    g.add_edge("risk_manager", END)
+    g.add_edge("risk_manager", "portfolio_manager")
+    g.add_edge("portfolio_manager", END)
     g.add_edge("log_only", END)
 
     return g.compile()
