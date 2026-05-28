@@ -1,4 +1,4 @@
-# NewsAlpha
+# LLM多智能体量化交易系统
 
 **简体中文** · [English](README.md)
 
