@@ -1,5 +1,7 @@
 # NewsAlpha
 
+**简体中文** · [English](README.en.md)
+
 > 新闻舆情驱动的多智能体美股交易系统 · **v1.0**
 
 基于 **LangGraph** 编排 12 个 Anthropic Claude 智能体（Opus 4.7 决策 / Sonnet 4.6 分析+辩论 / Haiku 4.5 采集），从新闻事件触发，经多轮 Bull/Bear 辩论后由 Trader → RiskManager → PortfolioManager 决策，通过 Alpaca paper trading 执行。完整闭环包含回测引擎、决策回放、Reflection 经验记忆，以及 Streamlit 实时仪表盘。
